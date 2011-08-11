@@ -385,7 +385,7 @@ void BTCTrader::buyTextEdited ( QString )
     float rate;
     amount = ui->buyAmountLineEdit->text().toFloat();
     rate = ui->buyRateLineEdit->text().toFloat();
-    ui->buyCostLabel->setText( QString::number ( ( amount * rate ) - (amount * rate / 100 * fee ) ) );
+    ui->buyCostLabel->setText( QString::number ( ( amount * rate ) + (amount * rate / 100 * fee ) ) );
 }
 
 void BTCTrader::sellTextEdited ( QString )

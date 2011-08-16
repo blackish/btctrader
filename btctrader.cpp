@@ -275,6 +275,8 @@ int BTCTrader::gotReply ( QNetworkReply* reply )
         }
     }
 
+    reply->deleteLater();
+
     return 0;
 }
 

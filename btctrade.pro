@@ -19,8 +19,7 @@ SOURCES += main.cpp\
     passworddialog.cpp \
     preferencedialog.cpp \
     tradehistorywidget.cpp \
-    historydialog.cpp \
-    cancelordermenu.cpp
+    historydialog.cpp
 
 HEADERS  += btctrader.h \
     graphicwidget.h \
@@ -30,8 +29,7 @@ HEADERS  += btctrader.h \
     passworddialog.h \
     preferencedialog.h \
     tradehistorywidget.h \
-    historydialog.h \
-    cancelordermenu.h
+    historydialog.h
 
 FORMS    += btctrader.ui \
     passworddialog.ui \

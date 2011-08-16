@@ -5,7 +5,7 @@ MyOrdersTableWidget::MyOrdersTableWidget(QWidget *parent) :
     QTableWidget(parent)
 {
     cancelOrder = new QAction ( tr ( "Cancel Order" ), this );
-    contextMenu = new CancelOrderMenu ();
+    contextMenu = new QMenu ();
     contextMenu->addAction( cancelOrder );
     connect ( cancelOrder, SIGNAL ( triggered () ), this, SLOT ( cancelOrderEvent() ) );
 }

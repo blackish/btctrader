@@ -5,14 +5,13 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QAction>
-#include <cancelordermenu.h>
 
 class MyOrdersTableWidget : public QTableWidget
 {
     Q_OBJECT
 public:
     explicit MyOrdersTableWidget(QWidget *parent = 0);
-    CancelOrderMenu* contextMenu;
+    QMenu* contextMenu;
     QAction* cancelOrder;
     ~MyOrdersTableWidget ();
 

@@ -18,7 +18,6 @@ BTCTrader::BTCTrader(QWidget *parent) :
 
     failedLogin = false;
     errorCount = 0;
-    contextMenuToggled = false;
     timerDepth = new QTimer ( this );
     timerTicker = new QTimer ( this );
     timerBalance = new QTimer ( this );
@@ -225,14 +224,14 @@ int BTCTrader::gotReply ( QNetworkReply* reply )
         balance = sc.property ( "btcs" ).toNumber();
     }
 
-    if ( sc.property ( "orders" ).isObject() )
+    if ( sc.property ( "orders" ).isObject() && ! myOrderTableWidget->contextMenu->isVisible() )
     {
         errorCount = 0;
         myOrderTableWidget->clear();
         myOrderTableWidget->setRowCount( 0 );
         myOrderTableWidget->setColumnCount( 4 );
         QScriptValueIterator iterator ( sc.property( "orders" ) );
-        while ( iterator.hasNext() && ! contextMenuToggled )
+        while ( iterator.hasNext() )
         {
             iterator.next();
             QTableWidgetItem* item;
@@ -295,21 +294,6 @@ void BTCTrader::sendBalanceRequest ()
     if ( failedLogin )
         return;
     return;
-    QString header;
-    nonce += 1;
-    if( !QCA::isSupported("hmac(sha512)") ) {
-                    qDebug("HMAC(SHA1) not supported!\n");};
-    QCA::Initializer init;
-    QCA::MessageAuthenticationCode hmacObject(  "hmac(sha512)", QCA::SecureArray() );
-    QCA::SymmetricKey keyObject(key);
-    hmacObject.setup(key);
-    QCA::SecureArray message(header.toStdString().c_str());
-    hmacObject.update(message);
-    QCA::SecureArray resultArray = hmacObject.final();
-    QByteArray result;
-    result = resultArray.toByteArray();
-    header += "&Rest-Sign=" + result.toBase64();
-    request->post (QNetworkRequest ( QUrl ( "https://mtgox.com/api/0/getFunds.php" )), header.toStdString().c_str() );
 }
 
 void BTCTrader::sendOrdersRequest ()
@@ -526,14 +510,4 @@ void BTCTrader::saveKeys ( QString openPassword )
     this->setWindowTitle( "BTCTrade" );
         timerOrders->start ( poolInterval );
 
-}
-void BTCTrader::tableContextMenuActive ()
-{
-    qDebug ( "!!!" );
-    contextMenuToggled = true;
-}
-
-void BTCTrader::tableContextMenuClosed ()
-{
-    contextMenuToggled = false;
 }

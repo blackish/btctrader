@@ -22,6 +22,8 @@ class BTCTrader : public QMainWindow
 public:
     explicit BTCTrader(QWidget *parent = 0);
     ~BTCTrader();
+    void tableContextMenuActive ();
+    void tableContextMenuClosed ();
 
 private:
     Ui::BTCTrader *ui;
@@ -45,6 +47,7 @@ private:
     QString restKey;
     QString restSign;
     QSettings* btctrader;
+    bool contextMenuToggled;
     void sendBuyRequest ( float amount, float price );
     void sendSellRequest ( float amount, float price );
     void signRequest ( QString* header, QNetworkRequest* newRequest );

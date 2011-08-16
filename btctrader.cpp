@@ -18,6 +18,7 @@ BTCTrader::BTCTrader(QWidget *parent) :
 
     failedLogin = false;
     errorCount = 0;
+    contextMenuToggled = false;
     timerDepth = new QTimer ( this );
     timerTicker = new QTimer ( this );
     timerBalance = new QTimer ( this );
@@ -78,6 +79,7 @@ BTCTrader::~BTCTrader()
     delete timerTicker;
     delete timerBalance;
     delete timerOrders;
+    delete myOrderTableWidget;
     btctrader->sync();
     delete btctrader;
 }
@@ -230,7 +232,7 @@ int BTCTrader::gotReply ( QNetworkReply* reply )
         myOrderTableWidget->setRowCount( 0 );
         myOrderTableWidget->setColumnCount( 4 );
         QScriptValueIterator iterator ( sc.property( "orders" ) );
-        while ( iterator.hasNext() )
+        while ( iterator.hasNext() && ! contextMenuToggled )
         {
             iterator.next();
             QTableWidgetItem* item;
@@ -297,9 +299,7 @@ void BTCTrader::sendBalanceRequest ()
     nonce += 1;
     if( !QCA::isSupported("hmac(sha512)") ) {
                     qDebug("HMAC(SHA1) not supported!\n");};
-    header = "nonce=" + QString::number( nonce )+"&Rest-Key="+"ad2a78fc-5fcc-42bb-88f1-9652f5490478";
     QCA::Initializer init;
-    QCA::SecureArray key ( "rzQRlt2hWU48n4VT9UWt5NFw1lAgAWTO8Xfdh/k7WXSxmeWwnoUIM5ok3dege1UT348phhaRzy9bUy7bS8cBAw==" );
     QCA::MessageAuthenticationCode hmacObject(  "hmac(sha512)", QCA::SecureArray() );
     QCA::SymmetricKey keyObject(key);
     hmacObject.setup(key);
@@ -526,4 +526,14 @@ void BTCTrader::saveKeys ( QString openPassword )
     this->setWindowTitle( "BTCTrade" );
         timerOrders->start ( poolInterval );
 
+}
+void BTCTrader::tableContextMenuActive ()
+{
+    qDebug ( "!!!" );
+    contextMenuToggled = true;
+}
+
+void BTCTrader::tableContextMenuClosed ()
+{
+    contextMenuToggled = false;
 }

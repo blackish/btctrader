@@ -1,10 +1,11 @@
 #include "myorderstablewidget.h"
+#include "btctrader.h"
 
 MyOrdersTableWidget::MyOrdersTableWidget(QWidget *parent) :
     QTableWidget(parent)
 {
     cancelOrder = new QAction ( tr ( "Cancel Order" ), this );
-    contextMenu = new QMenu ();
+    contextMenu = new CancelOrderMenu ();
     contextMenu->addAction( cancelOrder );
     connect ( cancelOrder, SIGNAL ( triggered () ), this, SLOT ( cancelOrderEvent() ) );
 }
@@ -23,6 +24,7 @@ void MyOrdersTableWidget::contextMenuEvent ( QContextMenuEvent * e )
 
 void MyOrdersTableWidget::cancelOrderEvent ()
 {
+
     int type;
     if ( this->selectedItems().size() == 0 )
         return;

@@ -9,7 +9,7 @@
 #include "orderswidget.h"
 #include "myorderstablewidget.h"
 #include <QSettings>
-
+#include <QSslError>
 
 namespace Ui {
     class BTCTrader;

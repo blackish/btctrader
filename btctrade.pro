@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network script qca
+QT       += core gui network script crypto
+CONFIG += crypto
 
 TARGET = btctrade
 TEMPLATE = app

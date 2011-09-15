@@ -24,6 +24,16 @@ QString OrderItem::toolTip() const
     return myToolTip;
 }
 
+float OrderItem::getStamp() const
+{
+    return stamp;
+}
+
+void OrderItem::setStamp ( const float& st )
+{
+    stamp = st;
+}
+
 void OrderItem::setPath(const QPainterPath &path)
 {
     myPath = path;

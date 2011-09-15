@@ -32,6 +32,8 @@ BTCTrader::BTCTrader(QWidget *parent) :
     request = new QNetworkAccessManager ( this );
 
     nonce = QDateTime::currentMSecsSinceEpoch() * 1000000;
+//    QDateTime cTime = QDateTime::currentDateTime();
+//    nonce = cTime.toTime_t() * 1000 * 1000000;
     connect ( request, SIGNAL ( finished ( QNetworkReply* ) ), this, SLOT ( gotReply ( QNetworkReply* ) ) );
     graph = new GraphicWidget ( this );
     ordersGraph = new OrdersWidget ( this );
@@ -282,13 +284,16 @@ int BTCTrader::gotReply ( QNetworkReply* reply )
 
 void BTCTrader::sendDepthRequest()
 {
-    request->get(QNetworkRequest(QUrl("https://mtgox.com/code/data/getDepth.php")));
+    QNetworkReply* rpl;
+    rpl = request->get(QNetworkRequest(QUrl("https://mtgox.com/api/0/data/getDepth.php")));
+    rpl->ignoreSslErrors();
 
 }
 void BTCTrader::sendTickerRequest()
 {
-    request->get(QNetworkRequest(QUrl("https://mtgox.com/code/data/ticker.php")));
-
+    QNetworkReply* rpl;
+    rpl = request->get(QNetworkRequest(QUrl("https://mtgox.com/api/0/data/ticker.php")));
+    rpl->ignoreSslErrors();
 }
 
 void BTCTrader::sendBalanceRequest ()
@@ -303,10 +308,12 @@ void BTCTrader::sendOrdersRequest ()
     if ( failedLogin )
         return;
     QString header;
+    QNetworkReply* rpl;
     QNetworkRequest newRequest ( QUrl ( "https://mtgox.com/api/0/getOrders.php" ) );
     header ="";
     signRequest ( &header, &newRequest );
-    request->post (newRequest, header.toStdString().c_str() );
+    rpl = request->post (newRequest, header.toStdString().c_str() );
+    rpl->ignoreSslErrors();
 
 }
 
@@ -315,10 +322,12 @@ void BTCTrader::sendCancelOrderRequest ( QString oid, int type )
     if ( failedLogin )
         return;
     QString header;
+    QNetworkReply* rpl;
     QNetworkRequest newRequest ( QUrl ( "https://mtgox.com/api/0/cancelOrder.php" ) );
     header = "oid="+oid+"&type="+QString::number(type);
     signRequest ( &header, &newRequest );
-    request->post (newRequest, header.toStdString().c_str() );
+    rpl = request->post (newRequest, header.toStdString().c_str() );
+    rpl->ignoreSslErrors();
 }
 
 void BTCTrader::sendBuyRequest ( float amount, float price )
@@ -326,10 +335,13 @@ void BTCTrader::sendBuyRequest ( float amount, float price )
     if ( failedLogin )
         return;
     QString header;
+    QNetworkReply* rpl;
     header = "amount="+QString::number ( amount )+"&price="+QString::number ( price );
     QNetworkRequest newRequest ( QUrl ( "https://mtgox.com/api/0/buyBTC.php" ) );
     signRequest ( &header, &newRequest );
-    request->post (newRequest, header.toStdString().c_str() );
+    rpl = request->post (newRequest, header.toStdString().c_str() );
+    rpl->ignoreSslErrors();
+
 }
 
 void BTCTrader::sendSellRequest ( float amount, float price )
@@ -337,10 +349,12 @@ void BTCTrader::sendSellRequest ( float amount, float price )
     if ( failedLogin )
         return;
     QString header;
+    QNetworkReply* rpl;
     header = "amount="+QString::number ( amount )+"&price="+QString::number ( price );
     QNetworkRequest newRequest ( QUrl ( "https://mtgox.com/api/0/sellBTC.php" ) );
     signRequest ( &header, &newRequest );
-    request->post (newRequest, header.toStdString().c_str() );
+    rpl = request->post (newRequest, header.toStdString().c_str() );
+    rpl->ignoreSslErrors();
 }
 
 void BTCTrader::signRequest ( QString* header, QNetworkRequest* newRequest )
@@ -349,7 +363,7 @@ void BTCTrader::signRequest ( QString* header, QNetworkRequest* newRequest )
     *header = ( header->length() == 0 ) ? "nonce=" + QString::number( nonce ) : "nonce=" + QString::number( nonce ) + "&" + *header;
     QCA::Initializer init;
     QCA::SecureArray key ( QByteArray::fromBase64( restSign.toStdString().c_str() ) );
-    QCA::MessageAuthenticationCode hmacObject(  "hmac(sha512)", QCA::SecureArray());
+    QCA::MessageAuthenticationCode hmacObject(  "hmac(sha512)", QCA::SecureArray(), "qca-ossl");
     QCA::SymmetricKey keyObject(key);
     hmacObject.setup(key);
     QCA::SecureArray message(header->toStdString().c_str());
@@ -359,8 +373,6 @@ void BTCTrader::signRequest ( QString* header, QNetworkRequest* newRequest )
     newRequest->setRawHeader( "Rest-Key", restKey.toStdString().c_str() );
     result = resultArray.toByteArray();
     newRequest->setRawHeader( "Rest-Sign", result.toBase64() );
-
-    QCA::SymmetricKey symKey;
 }
 
 void BTCTrader::buyTextEdited ( QString )

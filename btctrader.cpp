@@ -31,7 +31,8 @@ BTCTrader::BTCTrader(QWidget *parent) :
     fee = btctrader->value( "fee" ).toFloat();
     request = new QNetworkAccessManager ( this );
 
-    nonce = QDateTime::currentMSecsSinceEpoch() * 1000000;
+//    nonce = QDateTime::currentMSecsSinceEpoch() * 1000000;
+    nonce = QDateTime::currentDateTime().toTime_t() * 1000000;
 //    QDateTime cTime = QDateTime::currentDateTime();
 //    nonce = cTime.toTime_t() * 1000 * 1000000;
     connect ( request, SIGNAL ( finished ( QNetworkReply* ) ), this, SLOT ( gotReply ( QNetworkReply* ) ) );
@@ -240,22 +241,30 @@ int BTCTrader::gotReply ( QNetworkReply* reply )
             myOrderTableWidget->insertRow( 0 );
             item = new QTableWidgetItem ();
             item->setText( iterator.value().property( "oid" ).toString() );
+            if ( iterator.value().property ( "status" ).toInteger() != 1 )
+                item->setBackgroundColor( ( QColor ( Qt::gray ) ) );
             myOrderTableWidget->setItem( 0, 0, item );
             item = new QTableWidgetItem ();
             if ( iterator.value().property( "type" ).toInteger() == 1 )
                 item->setText( "S" );
             else
                 item->setText( "B" );
+            if ( iterator.value().property ( "status" ).toInteger() != 1 )
+                item->setBackgroundColor( ( QColor ( Qt::gray ) ) );
             myOrderTableWidget->setItem( 0, 1, item );
             item = new QTableWidgetItem ();
             item->setText( iterator.value().property( "amount" ).toString() );
+            if ( iterator.value().property ( "status" ).toInteger() != 1 )
+                item->setBackgroundColor( ( QColor ( Qt::gray ) ) );
             myOrderTableWidget->setItem( 0, 2, item );
             item = new QTableWidgetItem ();
             item->setText( iterator.value().property( "price" ).toString() );
+            if ( iterator.value().property ( "status" ).toInteger() != 1 )
+                item->setBackgroundColor( ( QColor ( Qt::gray ) ) );
             myOrderTableWidget->setItem( 0, 3, item );
             myOrderTableWidget->setRowHeight(0, 15);
         }
-        myOrderTableWidget->removeRow( 0 );
+/*        myOrderTableWidget->removeRow( 0 );*/
 
         myOrderTableWidget->setColumnWidth( 0, 0 );
         myOrderTableWidget->setColumnWidth( 1, 20 );
@@ -373,6 +382,7 @@ void BTCTrader::signRequest ( QString* header, QNetworkRequest* newRequest )
     newRequest->setRawHeader( "Rest-Key", restKey.toStdString().c_str() );
     result = resultArray.toByteArray();
     newRequest->setRawHeader( "Rest-Sign", result.toBase64() );
+    newRequest->setRawHeader( "content-type","application/x-www-form-urlencoded");
 }
 
 void BTCTrader::buyTextEdited ( QString )

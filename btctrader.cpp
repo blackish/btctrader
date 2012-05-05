@@ -32,7 +32,8 @@ BTCTrader::BTCTrader(QWidget *parent) :
     request = new QNetworkAccessManager ( this );
 
 //    nonce = QDateTime::currentMSecsSinceEpoch() * 1000000;
-    nonce = QDateTime::currentDateTime().toTime_t() * 1000000;
+    nonce = QDateTime::currentDateTime().toTime_t();
+    nonce = nonce * 1000000;
 //    QDateTime cTime = QDateTime::currentDateTime();
 //    nonce = cTime.toTime_t() * 1000 * 1000000;
     connect ( request, SIGNAL ( finished ( QNetworkReply* ) ), this, SLOT ( gotReply ( QNetworkReply* ) ) );
